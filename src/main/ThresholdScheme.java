@@ -1,33 +1,46 @@
 package main;
 
-import org.apache.commons.math3.analysis.polynomials.PolynomialFunctionLagrangeForm;
+//import org.apache.commons.math3.analysis.polynomials.PolynomialFunctionLagrangeForm;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 
 public class ThresholdScheme {
 
-	public ThresholdScheme(double[] polynomial, double[] participants, double[] shares, double[] points ) {
+	public ThresholdScheme(double[] polynomial, double[] participants, double[] shares, double[] points) {
 
 		PolynomialFunction privPoly = new PolynomialFunction(polynomial);
 
-		// double[] shares = { privPoly.value(1), 75, 75, 54, 52, 77, 54, 43 };
-
 		shares[0] = privPoly.value(1);
 
-		double i = 0;
+		double myPoint = 0;
 		for (double d : shares) {
-			i = i + d;
+			myPoint += d;
 
 		}
 
-		//double[] y = { i, 2782, 30822, 70960, 256422 };
-		
-		points[0] = i;
+		points[0] = myPoint;
 
-		PolynomialFunctionLagrangeForm pub = new PolynomialFunctionLagrangeForm(participants, points);
+		double deactivationCode = 0;
 
-		double[] values = pub.getCoefficients();
+		for (int i = 0; i < points.length; i++) {
+			double interpolation = 1;
+			for (int j = 0; j < participants.length; j++) {
 
-		System.out.println("Deactivation code: " + (int) values[0]);
+				if (i != j) {
+					interpolation *= ((participants[j]) / (participants[j] - participants[i]));
+
+				}
+
+			}
+			deactivationCode += interpolation * points[i];
+
+		}
+
+		// PolynomialFunctionLagrangeForm pub = new
+		// PolynomialFunctionLagrangeForm(participants, points);
+
+		// ((double[] values = pub.getCoefficients();
+
+		System.out.println("Deactivation code: " + (int) deactivationCode);
 
 	}
 
